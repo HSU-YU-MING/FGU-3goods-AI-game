@@ -1,0 +1,33 @@
+# 佛光尋光記 - Git 忽略清單
+
+# API 配置檔案 (包含金鑰,不應上傳)
+config.js
+
+# 編輯器設定
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 作業系統檔案
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 備份檔案
+*.bak
+*.backup
+*.tmp
+
+# Node.js (如果使用)
+node_modules/
+package-lock.json
+
+# 測試檔案
+test/
+*.test.js
+
+# 說明: 
+# config.js 包含你的 API 金鑰,絕對不要上傳到 GitHub!
+# 如果要分享專案,請提供 config.js.example 作為範本

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>佛光尋光記：三好之旅 AI 互動版</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 載入畫面 -->
+    <div id="loading-screen">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p>載入中...</p>
+        </div>
+    </div>
+
+    <!-- 標題畫面 -->
+    <div id="title-screen" class="screen active">
+        <div class="title-glow"></div>
+        <div class="title-content">
+            <div class="master-icon">
+                <span class="sparkle">✨</span>
+            </div>
+            <h1 class="game-title">佛光尋光記</h1>
+            <h2 class="game-subtitle">三好之旅 AI 互動版</h2>
+            <div class="title-description">
+                <p>結合傳統視覺小說與 AI 語意判定的全新體驗</p>                
+                <!--<p class="ai-badge">🤖 AI Powered by Google Gemini</p>-->
+            </div>
+            <div class="title-buttons">
+                <button class="title-btn primary" onclick="game.startNewGame()">
+                    <span class="btn-icon">▶</span> 開始新遊戲
+                </button>
+                <button class="title-btn" id="continue-btn" onclick="game.loadGame()" style="display: none;">
+                    <span class="btn-icon">📂</span> 繼續遊戲
+                </button>
+                <button class="title-btn" onclick="game.showAbout()">
+                    <span class="btn-icon">ℹ</span> 關於遊戲
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 關於畫面 -->
+    <div id="about-screen" class="screen">
+        <div class="about-content">
+            <h2>關於遊戲</h2>
+            <div class="about-text">
+                <h3>🎮 遊戲特色</h3>
+                <ul>
+                    <li><strong>AI 語意判定系統:</strong>使用 Google Gemini AI 分析你的回答,判斷是否符合三好精神</li>
+                    <li><strong>沉浸式劇情:</strong>精美場景與角色立繪,體驗完整的大學四年生活</li>
+                    <li><strong>教育意義:</strong>透過遊戲實踐「做好事、說好話、存好心」的三好理念</li>
+                </ul>
+                
+                <h3>📖 故事背景</h3>
+                <p>在佛光大學的新生訓練中，你遇見了星雲大師的精神化身。大師交給你一塊空白石板，要你在大學四年中尋找「三好之石」。只有真正實踐三好精神，才能點亮每一顆寶石。</p>
+                
+                <h3>💎 三好之石</h3>
+                <ul>
+                    <li><strong style="color: #10b981;">善行之石（綠）：</strong>身 - 做好事</li>
+                    <li><strong style="color: #3b82f6;">慧語之石（藍）：</strong>口 - 說好話</li>
+                    <li><strong style="color: #f59e0b;">淨念之石（金）：</strong>意 - 存好心</li>
+                </ul>
+
+                <h3>👥 製作團隊</h3>
+                <p>作者：許彧銘、許慧柔</p>
+                <p>AI 整合版本：2025/11/28</p>
+            </div>
+            <button class="title-btn primary" onclick="game.hideAbout()">返回</button>
+        </div>
+    </div>
+
+    <!-- 遊戲主畫面 -->
+    <div id="game-screen" class="screen">
+        <!-- 頂部UI -->
+        <div id="top-ui">
+            <div class="game-info">
+                <span class="game-logo">🏫 佛光尋光記</span>
+                <span class="chapter-name" id="chapter-display">序章</span>
+            </div>
+            <div class="gems-display">
+                <div class="gem-slot" data-gem="good_deed">
+                    <div class="gem-icon empty" id="gem-good-deed">
+                        <span class="gem-number">1</span>
+                    </div>
+                    <span class="gem-label">善行</span>
+                </div>
+                <div class="gem-slot" data-gem="good_word">
+                    <div class="gem-icon empty" id="gem-good-word">
+                        <span class="gem-number">2</span>
+                    </div>
+                    <span class="gem-label">慧語</span>
+                </div>
+                <div class="gem-slot" data-gem="good_heart">
+                    <div class="gem-icon empty" id="gem-good-heart">
+                        <span class="gem-number">3</span>
+                    </div>
+                    <span class="gem-label">淨念</span>
+                </div>
+            </div>
+            <button class="menu-btn" onclick="game.toggleMenu()">☰</button>
+        </div>
+
+        <!-- 選單 -->
+        <div id="game-menu" class="menu-overlay">
+            <div class="menu-content">
+                <h3>遊戲選單</h3>
+                <button class="menu-option" onclick="game.saveGame()">💾 儲存進度</button>
+                <button class="menu-option" onclick="game.loadGame()">📂 讀取進度</button>
+                <button class="menu-option" onclick="game.returnToTitle()">🏠 回到標題</button>
+                <button class="menu-option close" onclick="game.toggleMenu()">✕ 關閉選單</button>
+            </div>
+        </div>
+
+        <!-- 遊戲場景 -->
+        <div id="game-container">
+            <!-- 場景背景 -->
+            <div id="scene-background"></div>
+
+            <!-- 角色層 -->
+            <div id="characters-layer">
+                <div class="character-pos left" id="char-left"></div>
+                <div class="character-pos center" id="char-center"></div>
+                <div class="character-pos right" id="char-right"></div>
+            </div>
+
+            <!-- 對話框 -->
+            <div id="dialogue-box">
+                <div id="speaker-name"></div>
+                <div id="dialogue-text"></div>
+                <div id="dialogue-indicator">▼</div>
+            </div>
+
+            <!-- AI 輸入介面 -->
+            <div id="ai-input-container" style="display: none;">
+                <div class="ai-prompt-box">
+                    <div class="ai-prompt-header">
+                        <span class="ai-icon">🤖</span>
+                        <span class="ai-title">AI 語意判定</span>
+                    </div>
+                    <div class="ai-prompt-description" id="ai-prompt-text"></div>
+                    <div class="ai-hint-box">
+                        <button class="hint-toggle" onclick="game.toggleHint()">
+                            💡 <span id="hint-toggle-text">顯示提示</span>
+                        </button>
+                        <div class="hint-content" id="hint-content" style="display: none;"></div>
+                    </div>
+                    <textarea 
+                        id="user-input" 
+                        placeholder="請在此輸入你的回答..."
+                        maxlength="500"
+                    ></textarea>
+                    <div class="ai-input-footer">
+                        <span class="char-count"><span id="char-count">0</span> / 500</span>
+                        <button class="ai-submit-btn" onclick="game.submitAIInput()">
+                            <span class="btn-icon">🚀</span> 確認行動
+                        </button>
+                    </div>
+                </div>
+
+                <!-- AI 分析中 -->
+                <div id="ai-analyzing" class="ai-analyzing" style="display: none;">
+                    <div class="analyzing-content">
+                        <div class="spinner-large"></div>
+                        <p class="analyzing-text">AI 語意分析中...</p>
+                        <p class="analyzing-subtext">正在評估你的回答是否符合三好精神</p>
+                    </div>
+                </div>
+
+                <!-- AI 結果顯示 -->
+                <div id="ai-result" style="display: none;"></div>
+            </div>
+
+            <!-- 選擇按鈕 -->
+            <div id="choices-container"></div>
+        </div>
+    </div>
+
+    <!-- API 設定畫面 -->
+    <div id="api-config-screen" class="screen">
+        <div class="config-content">
+            <h2>🔑 API 設定</h2>
+            <p class="config-description">
+                本遊戲使用 Google Gemini API 進行 AI 語意分析。<br>
+                請輸入你的 API 金鑰以啟用 AI 判定功能。
+            </p>
+            <div class="config-form">
+                <label for="api-key-input">Google Gemini API Key：</label>
+                <input 
+                    type="password" 
+                    id="api-key-input" 
+                    placeholder="AIza..." 
+                    class="api-key-input"
+                >
+                <div class="config-buttons">
+                    <button class="config-btn primary" onclick="game.saveApiKey()">
+                        💾 儲存金鑰
+                    </button>
+                    <button class="config-btn" onclick="game.skipApiConfig()">
+                        ⏭️ 跳過（使用本地模式）
+                    </button>
+                </div>
+                <p class="config-note">
+                    ℹ️ 金鑰將儲存在瀏覽器本地，不會上傳到任何伺服器。<br>
+                    如果跳過設定，將使用本地語意匹配模式（準確度較低）。
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="story.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
